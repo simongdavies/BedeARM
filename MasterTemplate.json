@@ -1,0 +1,252 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"type": "string",
+			"allowedValues":
+			[
+				"westeurope",
+				"northeurope"
+			],
+			"metadata" : {
+				"description" : "Deployment location"
+			},
+			"defaultValue":"[resourceGroup().location]"
+		},
+		"newOrExistingVirtualNetwork":{
+			"type": "string",
+			"allowedValues":
+			[
+				"new",
+				"existing"
+			],
+			"metadata" : {
+				"description" : "Create a New Or Use an Existing Virtual Network"
+			},
+			"defaultValue":"new"
+		},
+		"virtualNetworkName": {
+			"type": "string"
+		},
+		"virtualNetworkProperties":{
+			"type" : "object",
+			"metadata" : {
+				"description" : "The properties of the new Virtual Network"
+			},
+			"defaultValue":{
+				"addressSpace": {
+					"addressPrefixes": [
+						"10.0.0.0/16"
+				  ]
+				},
+				"subnets": [
+					{
+						"name": "subnet1",
+						"properties" : {
+						"addressPrefix": "10.0.0.0/24"
+						}
+					}
+				]
+			}
+		},
+		"newOrExistingAzureSQLDatabaseServer":{
+			"type": "string",
+			"allowedValues":
+			[
+				"new",
+				"existing"
+			],
+			"metadata" : {
+				"description" : "Create a New Or Use an Existing Azure SQL Database Server"
+			},
+			"defaultValue":"new"
+		},
+		"azureSQLServerName":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "Name of the Azure SQL Server"
+			}
+		},
+		"azureSQLAdminLogin":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "Azure SQL admin user"
+			}
+		},
+		"azureSQLAdminPassword" : {
+			"type" : "securestring",
+			"metadata" : {
+				"Description" : "Azure SQL admin password"
+			}
+		},
+		"azureSQLVersion" : {
+			"type" : "string",
+			"allowedValues":
+			[
+				"2.0",
+				"12.0"
+			],
+			"metadata" : {
+				"Description" : "Azure SQL version"
+			},
+			"defaultValue":"2.0"
+		},
+		"newOrExistingAzureSQLDatabase":{
+			"type": "string",
+			"allowedValues":
+			[
+				"new",
+				"existing"
+			],
+			"metadata" : {
+				"description" : "Create a New Or Use an Existing Azure SQL Database"
+			},
+			"defaultValue":"new"
+		},
+		"azureSQLDatabaseName":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "SQL Azure Database Name"
+			}
+		},
+		"azureSQLDatabaseEdition":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "SQL Azure Database Edition"
+			},
+			"defaultValue":"Standard"
+		},
+		"azureSQLDatabaseCollation":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "SQL Azure Database Collation"
+			},
+			"defaultValue":"SQL_Latin1_General_CP1_CI_AS"
+		},
+		"azureSQLDatabaseSizeInBytes":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "SQL Azure Database Size"
+			},
+			"defaultValue":"1073741824"
+		}
+	},
+	"variables": {
+		"templateConstants":{
+			"templateLocation":"https://sdaviesms.blob.core.windows.net/templates/",
+			"vnetTemplateName": "VNet.json",
+			"azureSQLServerTemplateName":"AzureSQLServer.json",
+			"azureSQLDatabaseTemplateName": "AzureSQLDatabase.json"
+		},
+		"runtimeTemplateUris":{
+			"virtualNetworkTemplate":"[Concat(variables('templateConstants').templateLocation,parameters('newOrExistingVirtualNetwork'),variables('templateConstants').vnetTemplateName)]",
+			"azureSQLServerTemplate":"[Concat(variables('templateConstants').templateLocation,parameters('newOrExistingAzureSQLDatabaseServer'),variables('templateConstants').azureSQLServerTemplateName)]",
+			"azureSQLDatabaseTemplate":"[Concat(variables('templateConstants').templateLocation,parameters('newOrExistingAzureSQLDatabase'),variables('templateConstants').azureSQLDatabaseTemplateName)]"
+		},
+		"azureSQLServerProperties": {
+			"version": "[parameters('azureSQLVersion')]",
+			"fullyQualifiedDomainName": "[concat(parameters('azureSQLServerName'),'.database.windows.net')]",
+			"administratorLogin": "[parameters('azureSQLAdminLogin')]",
+			"administratorLoginPassword":"[parameters('azureSQLAdminPassword')]"
+		},
+		"azureSQLDatabaseProperties":{
+			"edition": "[parameters('azureSQLDatabaseEdition')]",
+			"collation": "[parameters('azureSQLDatabaseCollation')]",
+			"maxSizeBytes": "[parameters('azureSQLDatabaseSizeInBytes')]"
+		}
+	},
+	"resources": [
+		{
+			"apiVersion": "2015-01-01",
+			"name": "vnetCreation",
+			"type": "Microsoft.Resources/deployments",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri":"[variables('runtimeTemplateUris').virtualNetworkTemplate]",
+					"contentVersion":"1.0.0.0"
+				},
+				"parameters": {
+					"resourceName": {
+						"value":"[parameters('virtualNetworkName')]"
+					},
+					"resourceProvider":{
+						"value":"Microsoft.Network"
+					},
+					"resourceType":{
+						"value":"virtualNetworks"
+					},
+					"resourceLocation":{
+						"value":"[parameters('location')]"
+					},
+					"properties":{
+						"value":"[parameters('virtualNetworkProperties')]"
+					}
+				}
+			}
+		},
+		{
+			"apiVersion": "2015-01-01",
+			"name": "azureSQLServerCreation",
+			"type": "Microsoft.Resources/deployments",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri":"[variables('runtimeTemplateUris').azureSQLServerTemplate]",
+					"contentVersion":"1.0.0.0"
+				},
+				"parameters": {
+					"resourceName": {
+						"value":"[parameters('azureSQLServerName')]"
+					},
+					"resourceProvider":{
+						"value":"Microsoft.Sql"
+					},
+					"resourceType":{
+						"value":"servers"
+					},
+					"resourceLocation":{
+						"value":"[parameters('location')]"
+					},
+					"properties":{
+						"value":"[variables('azureSQLServerProperties')]"
+					}
+				}
+			}
+		},
+		{
+			"apiVersion": "2015-01-01",
+			"name": "sqlAzureDatabaseCreation",
+			"type": "Microsoft.Resources/deployments",
+			"dependsOn":[
+				"azureSQLServerCreation"
+			],
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri":"[variables('runtimeTemplateUris').azureSQLDatabaseTemplate]",
+					"contentVersion":"1.0.0.0"
+				},
+				"parameters": {
+					"resourceName": {
+						"value":"[concat(parameters('azureSQLServerName'),'/',parameters('azureSQLDatabaseName'))]"
+					},
+					"resourceProvider":{
+						"value":"Microsoft.Sql"
+					},
+					"resourceType":{
+						"value":"servers/databases"
+					},
+					"resourceLocation":{
+						"value":"[parameters('location')]"
+					},
+					"properties":{
+						"value":"[variables('azureSQLDatabaseProperties')]"
+					}
+				}
+			}
+		}
+	]
+}
+

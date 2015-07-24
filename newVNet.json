@@ -1,0 +1,67 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"resourceGroupName": {
+			"type": "string",
+			"metadata": {
+				"Description": "The name of the ResourceGroup the resource is contained in - this is ignored in this template and is only to support new or existing pattern"							
+			},
+			"defaultValue": "[resourceGroup().name]"	
+		},
+		"resourceName": {
+			"type": "string",
+			"metadata": {
+				"Description": "The name of the Resource"
+			}
+		},
+		"resourceProvider":{
+			"type": "string",
+			"metadata": {
+				"Description": "The name of the Resource Provider"
+			}
+		},
+		"resourceType":{
+			"type": "string",
+			"metadata": {
+				"Description": "The Type of the Resource"
+			}
+		},
+		"resourceLocation":{
+			"type": "string",
+			"metadata": {
+				"Description": "The location of the resource"
+			}
+		},	
+		"properties":{
+			"type": "object",
+			"metadata": {
+				"Description": "Properties of the new resouce"
+			}
+		},
+		"apiVersion":{
+			"type": "string",
+			"metadata": {
+				"Description": "The version of the API to call"
+			},
+			"defaultValue": "[providers(parameters('resourceProvider'),parameters('resourceType')).apiVersions[0]]"	
+		}
+		
+	},
+	"resources": [
+		{
+		  "apiVersion": "[parameters('apiVersion')]",
+		  "type": "Microsoft.Network/virtualNetworks",
+		  "name": "[parameters('resourceName')]",
+		  "location": "[parameters('resourceLocation')]",
+		  "properties": "[parameters('properties')]"
+		}
+	],
+	"outputs": {
+		"properties": {
+			"value": "[reference(resourceId(parameters('resourceGroupName'),concat(parameters('resourceProvider'),'/',parameters('resourceType')),parameters('resourceName')),providers(parameters('resourceProvider'),parameters('resourceType')).apiVersions[0])]",
+			"type" : "object"
+			
+		}
+	}
+}
