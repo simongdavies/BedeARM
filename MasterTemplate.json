@@ -145,9 +145,9 @@
 			"azureSQLDatabaseTemplateName": "AzureSQLDatabase.json"
 		},
 		"runtimeTemplateUris":{
-			"virtualNetworkTemplate":"[Concat(parameters('templateLocation'),parameters('newOrExistingVirtualNetwork'),variables('templateConstants').vnetTemplateName)]",
-			"azureSQLServerTemplate":"[Concat(parameters('templateLocation'),parameters('newOrExistingAzureSQLDatabaseServer'),variables('templateConstants').azureSQLServerTemplateName)]",
-			"azureSQLDatabaseTemplate":"[Concat(parameters('templateLocation'),parameters('newOrExistingAzureSQLDatabase'),variables('templateConstants').azureSQLDatabaseTemplateName)]"
+			"virtualNetworkTemplate":"[Concat(parameters('templateLocation'),toLower(parameters('newOrExistingVirtualNetwork')),variables('templateConstants').vnetTemplateName)]",
+			"azureSQLServerTemplate":"[Concat(parameters('templateLocation'),toLower(parameters('newOrExistingAzureSQLDatabaseServer')),variables('templateConstants').azureSQLServerTemplateName)]",
+			"azureSQLDatabaseTemplate":"[Concat(parameters('templateLocation'),toLower(parameters('newOrExistingAzureSQLDatabase')),variables('templateConstants').azureSQLDatabaseTemplateName)]"
 		},
 		"azureSQLServerProperties": {
 			"version": "[parameters('azureSQLVersion')]",

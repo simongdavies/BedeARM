@@ -10,11 +10,27 @@ if (!(Get-AzureAccount))
 }
 try
 {
-    New-AzureResourceGroup -Name $ResourceGroupName -Location $Location
+    $ResourceGroup=Get-AzureResourceGroup -Name $ResourceGroupName
+
+    if ($ResourceGroup) 
+    {
+        if ($ResourceGroup.Location -ne ($Location.ToLowerInvariant().Replace(' ','')))
+        {
+            Throw "Resource Group $ResourceGroupName already exists in Location$ResourceGroup.Location"
+        }
+    }
+    else
+    {
+        New-AzureResourceGroup -Name $ResourceGroupName -Location $Location
+    }
 
     # Deploy a new VNet, DB Server and DB 
 
     New-AzureResourceGroupDeployment -Name 'allnew' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-new-vnet-sqlserver-sqldatabase.json -templateLocation $TemplateLocation
+    
+    # Deploy an existing VNet with a new DBServer and DB
+    
+    New-AzureResourceGroupDeployment -Name 'existingvnetnewServerandDB' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-existing-vnet-sqlserver-sqldatabase.json -templateLocation $TemplateLocation
 
 }
 catch
