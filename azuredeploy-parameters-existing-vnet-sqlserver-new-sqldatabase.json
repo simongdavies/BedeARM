@@ -11,14 +11,11 @@
 		"azureSQLServerName":{
 			"value":"sdtestazuresql31"
 		},
-		"azureSQLAdminLogin":{
-			"value":"Simon"
-		},
-		"azureSQLAdminPassword":{
-			"value":"!!Passw0rd!!"
+		"newOrExistingAzureSQLDatabaseServer":{
+			"value":"existing"
 		},
 		"azureSQLDatabaseName":{
-			"value":"testdb"
+			"value":"testdb1"
 		}
 	}
 }

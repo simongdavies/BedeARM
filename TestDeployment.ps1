@@ -28,9 +28,13 @@ try
 
     New-AzureResourceGroupDeployment -Name 'allnew' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-new-vnet-sqlserver-sqldatabase.json -templateLocation $TemplateLocation
     
+    # Deploy to existing VNet with a new DBServer and DB
+    
+    New-AzureResourceGroupDeployment -Name 'existingvnetnewServerandDB' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-existing-vnet-new-sqlserver-sqldatabase.json -templateLocation $TemplateLocation
+    
     # Deploy an existing VNet with a new DBServer and DB
     
-    New-AzureResourceGroupDeployment -Name 'existingvnetnewServerandDB' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-existing-vnet-sqlserver-sqldatabase.json -templateLocation $TemplateLocation
+    New-AzureResourceGroupDeployment -Name 'existingvnetServernewDB' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-existing-vnet-sqlserver-new-sqldatabase.json -templateLocation $TemplateLocation
 
 }
 catch
