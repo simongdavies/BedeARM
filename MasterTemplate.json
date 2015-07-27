@@ -130,19 +130,24 @@
 				"description" : "SQL Azure Database Size"
 			},
 			"defaultValue":"1073741824"
+		},
+		"templateLocation":{
+			"type" : "string",
+			"metadata" : {
+				"description" : "Location of linked templates"
+			}
 		}
 	},
 	"variables": {
 		"templateConstants":{
-			"templateLocation":"https://sdaviesms.blob.core.windows.net/templates/",
 			"vnetTemplateName": "VNet.json",
 			"azureSQLServerTemplateName":"AzureSQLServer.json",
 			"azureSQLDatabaseTemplateName": "AzureSQLDatabase.json"
 		},
 		"runtimeTemplateUris":{
-			"virtualNetworkTemplate":"[Concat(variables('templateConstants').templateLocation,parameters('newOrExistingVirtualNetwork'),variables('templateConstants').vnetTemplateName)]",
-			"azureSQLServerTemplate":"[Concat(variables('templateConstants').templateLocation,parameters('newOrExistingAzureSQLDatabaseServer'),variables('templateConstants').azureSQLServerTemplateName)]",
-			"azureSQLDatabaseTemplate":"[Concat(variables('templateConstants').templateLocation,parameters('newOrExistingAzureSQLDatabase'),variables('templateConstants').azureSQLDatabaseTemplateName)]"
+			"virtualNetworkTemplate":"[Concat(parameters('templateLocation'),parameters('newOrExistingVirtualNetwork'),variables('templateConstants').vnetTemplateName)]",
+			"azureSQLServerTemplate":"[Concat(parameters('templateLocation'),parameters('newOrExistingAzureSQLDatabaseServer'),variables('templateConstants').azureSQLServerTemplateName)]",
+			"azureSQLDatabaseTemplate":"[Concat(parameters('templateLocation'),parameters('newOrExistingAzureSQLDatabase'),variables('templateConstants').azureSQLDatabaseTemplateName)]"
 		},
 		"azureSQLServerProperties": {
 			"version": "[parameters('azureSQLVersion')]",
@@ -229,8 +234,11 @@
 					"contentVersion":"1.0.0.0"
 				},
 				"parameters": {
-					"resourceName": {
-						"value":"[concat(parameters('azureSQLServerName'),'/',parameters('azureSQLDatabaseName'))]"
+					"parentResourceName": {
+						"value":"[parameters('azureSQLServerName')]"
+					},
+					"nestedResourceName": {
+						"value":"[parameters('azureSQLDatabaseName')]"
 					},
 					"resourceProvider":{
 						"value":"Microsoft.Sql"

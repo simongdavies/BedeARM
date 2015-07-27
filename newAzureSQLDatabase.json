@@ -9,10 +9,16 @@
 			},
 			"defaultValue": "[resourceGroup().name]"
 		},
-		"resourceName": {
+		"parentResourceName": {
 			"type": "string",
 			"metadata": {
-				"Description": "The name of the Resource"
+				"Description": "The name of the Parent Resource"
+			}
+		},
+		"nestedResourceName": {
+			"type": "string",
+			"metadata": {
+				"Description": "The name of the Nested Resource"
 			}
 		},
 		"resourceProvider":{
@@ -48,18 +54,21 @@
 		}
 
 	},
+	"variables":{
+		"resourceName":"[concat(parameters('parentResourceName'),'/',parameters('nestedResourceName'))]"
+	},
 	"resources": [
 		{
 		  "apiVersion": "[parameters('apiVersion')]",
 		  "type": "Microsoft.Sql/servers/databases",
-		  "name": "[parameters('resourceName')]",
+		  "name": "[variables('resourceName')]",
 		  "location": "[parameters('resourceLocation')]",
 		  "properties": "[parameters('properties')]"
 		}
 	],
 	"outputs": {
 		"properties": {
-			"value": "[reference(resourceId(parameters('resourceGroupName'),concat(parameters('resourceProvider'),'/',parameters('resourceType')),parameters('resourceName')),providers(parameters('resourceProvider'),parameters('resourceType')).apiVersions[0])]",
+			"value": "[reference(resourceId(parameters('resourceGroupName'),concat(parameters('resourceProvider'),'/',parameters('resourceType')),parameters('parentResourceName'),parameters('nestedResourceName')),providers(parameters('resourceProvider'),parameters('resourceType')).apiVersions[0])]",
 			"type" : "object"
 
 		}
