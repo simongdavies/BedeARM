@@ -16,6 +16,12 @@
 		},
 		"azureSQLDatabaseName":{
 			"value":"testdb1"
+		},
+		"azureSQLAdminLogin":{
+			"value":"thisisignored"
+		},
+		"azureSQLAdminPassword":{
+			"value":"thisisignored"
 		}
 	}
 }

@@ -32,7 +32,7 @@ try
     
     New-AzureResourceGroupDeployment -Name 'existingvnetnewServerandDB' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-existing-vnet-new-sqlserver-sqldatabase.json -templateLocation $TemplateLocation
     
-    # Deploy an existing VNet with a new DBServer and DB
+    # Deploy an existing VNet and  DBServer with a new DB
     
     New-AzureResourceGroupDeployment -Name 'existingvnetServernewDB' -ResourceGroupName $ResourceGroupName -TemplateFile .\MasterTemplate.json -TemplateParameterFile .\azuredeploy-parameters-existing-vnet-sqlserver-new-sqldatabase.json -templateLocation $TemplateLocation
 
